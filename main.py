@@ -177,8 +177,8 @@ class VK:
 
 
 if __name__ == '__main__':
-
-    TOKEN_YANDEX = input(f"Input token from Yandex.Disk Polygon: ")
+    print('Input data and press enter')
+    TOKEN_Y = input(f"Input token from Yandex.Disk Polygon: ")
     vk_id = int(input("Input vk user id: "))
     vk_token = str(input(f"Input token VK"))
     print('')
@@ -209,7 +209,7 @@ if __name__ == '__main__':
     # Сохраняем фото на yandex disk в папку по названию альбому
     ya_folder = photo_links_vk[::-1][0]['path_local'].split('/')[1]
 
-    uploader = YaUploader(token=TOKEN_YANDEX, ya_folder=ya_folder)
+    uploader = YaUploader(token=TOKEN_Y, ya_folder=ya_folder)
 
     print(f"Total files: {len(photo_links_vk) - 1}.  " )
     for link in photo_links_vk:
