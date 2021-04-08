@@ -1,4 +1,4 @@
-# TODO: https://github.com/netology-code/py-diplom-basic
+#  https://github.com/netology-code/py-diplom-basic
 #  Нужно написать программу для резервного копирования фотографий с профиля(аватарок) пользователя vk в облачное хранилище
 #  Яндекс.Диск.
 #  Для названий фотографий использовать количество лайков, если количество лайков одинаково, то добавить дату загрузки.
@@ -41,17 +41,12 @@
 # 2. Сохранять фотографии из других социальных сетей. Одноклассники и Инстаграмм
 # 3. Сохранять фотографии на Google.Drive.
 
-# Советы:
-#  Для тестирования можно использовать аккаунт https://vk.com/begemot_korovin
-# Токен для VK api: 958eb5d439726565e9333aa30e50e0f937ee432e927f0dbd541c541887d919a7c56f95c04217915c32008
-
-# Данные на фото с моей странички: https://vk.com/albums2419874
 
 import copy
 import json
 import os
 from urllib.parse import urlparse
-from pprint import pprint
+# from pprint import pprint
 import requests
 
 
@@ -177,10 +172,10 @@ class VK:
 
 
 if __name__ == '__main__':
-    print('Input data and press enter')
+    print('input data and press enter'.upper())
     TOKEN_Y = input(f"Input token from Yandex.Disk Polygon: ")
     vk_id = int(input("Input vk user id: "))
-    vk_token = str(input(f"Input token VK"))
+    vk_token = str(input(f"Input token VK: "))
     print('-------------------------------------------')
     vk_v = 5.89
     # vk_v = 5.130   #  Current version
