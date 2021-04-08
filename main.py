@@ -60,7 +60,7 @@ class YaUploader:
     def __init__(self, token: str, ya_folder: str):
         self.token = token
         self.y_directory = ya_folder
-        self.get_new_folder()
+        self.create_dir_y()
 
     def get_headers(self):
         headers = {'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ class YaUploader:
                    }
         return headers
 
-    def get_new_folder(self):
+    def create_dir_y(self):
         """Метод создает новую папку на яндекс диске"""
         _url = 'https://cloud-api.yandex.net/v1/disk/resources'
         headers = self.get_headers()
@@ -82,7 +82,7 @@ class YaUploader:
         else:
             print(f'Папка: {self.y_directory} создана на Yandex disc')
 
-    def upload_file_yd(self, file_path: str, url):
+    def upload_file_y(self, file_path: str, url):
         """Метод загружает файл file_path на яндекс диск"""
         up_url = 'https://cloud-api.yandex.net/v1/disk/resources/upload'
         headers = self.get_headers()
@@ -178,9 +178,9 @@ class VK:
 
 if __name__ == '__main__':
 
-    TOKEN_YANDEX = input(f"input token from Yandex.Disk Polygon: ")
-    vk_token = '958eb5d439726565e9333aa30e50e0f937ee432e927f0dbd541c541887d919a7c56f95c04217915c32008'
+    TOKEN_YANDEX = input(f"Input token from Yandex.Disk Polygon: ")
     vk_id = int(input("Input vk user id: "))
+    vk_token = str(input(f"Input token VK"))
     print('')
     vk_v = 5.89
     # vk_v = 5.130   #  Current version
@@ -215,6 +215,6 @@ if __name__ == '__main__':
     for link in photo_links_vk:
         if 'url' in link and 'file_name' in link:
             # print(link['url'])
-            uploader.upload_file_yd(ya_folder + '/' + link['file_name'], link['url'])
+            uploader.upload_file_y(ya_folder + '/' + link['file_name'], link['url'])
 
     print(f'Upload completed successfully to directory "{ya_folder}".')
