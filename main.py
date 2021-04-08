@@ -181,7 +181,7 @@ if __name__ == '__main__':
     TOKEN_Y = input(f"Input token from Yandex.Disk Polygon: ")
     vk_id = int(input("Input vk user id: "))
     vk_token = str(input(f"Input token VK"))
-    print('')
+    print('-------------------------------------------')
     vk_v = 5.89
     # vk_v = 5.130   #  Current version
     count_photos = 5  # Количество скаченных фото по умолчанию
