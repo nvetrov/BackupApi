@@ -77,6 +77,7 @@ class YaUploader:
         else:
             print(f'Папка: {self.y_directory} создана на Yandex disc')
 
+    # Загружать файл на яндекс Диск.
     def upload_file_y(self, file_path: str, url):
         """Метод загружает файл file_path на яндекс диск"""
         up_url = 'https://cloud-api.yandex.net/v1/disk/resources/upload'
@@ -90,7 +91,7 @@ class YaUploader:
 
 #  класс VK по работе с api
 class VK:
-    def __init__(self, _vk_id: int, token: str, version: float,  count: int):
+    def __init__(self, _vk_id: int, token: str, version: float, count: int):
         self.token = token
         self.vk = _vk_id  # id пользователя vk
         self.v = version  # версия api vk
@@ -118,6 +119,7 @@ class VK:
     @staticmethod
     def clear_data_and_save_json(self, dict_data):
         #  Создаем папку с названием альбома
+        # os.rmdir('saved')
         if not os.path.exists('saved'):
             os.mkdir('saved')
         photo_folder = 'saved/album{0}'.format(self.vk)
@@ -151,7 +153,6 @@ class VK:
         for item in ll:
             if count < self.count:
                 photo_dict = {}
-
                 # выбираем тип фото z
                 for i in item['sizes']:
                     if i['type'] == 'z':
@@ -161,10 +162,19 @@ class VK:
                         #  Показывать пользователю в консоли для лога
                         photo_dict['file_name_real_name'] = os.path.basename(urlparse(i['url']).path)
                         photo_dict['url'] = i['url']
-                        print(f'{count}, photo {photo_dict["file_name_real_name"]}, from {photo_dict["url"]}')
+                        print(
+                            f'{count}, photo {photo_dict["file_name_real_name"]}, from {photo_dict["url"]}, | {i["type"]}')
                         count += 1
                     else:
-                        continue
+                        photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
+                        photo_dict['size'] = item['sizes'][-1]['type']
+                        #  Показывать пользователю в консоли для лога
+                        photo_dict['file_name_real_name'] = os.path.basename(urlparse(i['url']).path)
+                        photo_dict['url'] = i['url']
+                        print(
+                            f'{count}, photo {photo_dict["file_name_real_name"]}, from {photo_dict["url"]}, | {i["type"]}')
+                        count += 1
+
                     photo_lst.append(photo_dict)
         print(f'Downloaded from VK profile.\n'
               f'For more information see  "photos_log.json"')
@@ -173,9 +183,11 @@ class VK:
 
 if __name__ == '__main__':
     print('input data and press enter'.upper())
-    TOKEN_Y = input(f"Input token from Yandex.Disk Polygon: ")
-    vk_id = int(input("Input vk user id: "))
-    vk_token = str(input(f"Input token VK: "))
+    TOKEN_Y = 'AgAAAAAAS0ctAADLW5s95K1kRERdr_-hgG5KTnI'  # input(f"Input token from Yandex.Disk Polygon: ")
+
+    # vk_id = 552934290  # int(input("Input vk user id: "))
+    vk_id = 2419874 #552934290 #int(input("Input vk user id: "))
+    vk_token = '230860474a5a4588be7af906b5fc4d3b038401bbeb578b20603e956ab02b971c41fb78c9f1f8b02b887f4'  # str(input(f"Input token VK: "))
     print('--------------------------------------------')
     vk_v = 5.89
     # vk_v = 5.130   #  Current version
@@ -206,7 +218,7 @@ if __name__ == '__main__':
 
     uploader = YaUploader(token=TOKEN_Y, ya_folder=ya_folder)
 
-    print(f"Total files: {len(photo_links_vk) - 1}.  " )
+    print(f"Total files: {len(photo_links_vk) - 1}.  ")
     for link in photo_links_vk:
         if 'url' in link and 'file_name' in link:
             # print(link['url'])
