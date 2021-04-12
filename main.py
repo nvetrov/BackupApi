@@ -157,7 +157,7 @@ class VK:
                 photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
                 photo_dict['size'] = item['sizes'][-1]['type']
                 photo_dict['url'] = item['sizes'][-1]['url']
-                print(photo_dict['url'])
+                pprint(photo_dict)
 
                 # выбираем тип фото z
                 # for i in item['sizes']:
