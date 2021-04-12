@@ -45,6 +45,7 @@
 import copy
 import json
 import os
+from pprint import pprint
 from urllib.parse import urlparse
 # from pprint import pprint
 import requests
@@ -145,37 +146,44 @@ class VK:
         return urls_dict
 
     def logging_vk(self, answer):
-        count = 1
+        count = 0
         # Обработка ответа от VK
         ll = answer['response']['items']
         photo_lst = []
         print("Download from VK. Please wait...")
         for item in ll:
             if count < self.count:
-                photo_dict = {}
-                # выбираем тип фото z
-                for i in item['sizes']:
-                    if i['type'] == 'z':
-                        # Формируем название файла фото по кол-ву лайков
-                        photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
-                        photo_dict['size'] = i['type']
-                        #  Показывать пользователю в консоли для лога
-                        photo_dict['file_name_real_name'] = os.path.basename(urlparse(i['url']).path)
-                        photo_dict['url'] = i['url']
-                        print(
-                            f'{count}, photo {photo_dict["file_name_real_name"]}, from {photo_dict["url"]}, | {i["type"]}')
-                        count += 1
-                    else:
-                        photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
-                        photo_dict['size'] = item['sizes'][-1]['type']
-                        #  Показывать пользователю в консоли для лога
-                        photo_dict['file_name_real_name'] = os.path.basename(urlparse(i['url']).path)
-                        photo_dict['url'] = i['url']
-                        print(
-                            f'{count}, photo {photo_dict["file_name_real_name"]}, from {photo_dict["url"]}, | {i["type"]}')
-                        count += 1
+                photo_dict = dict()
+                photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
+                photo_dict['size'] = item['sizes'][-1]['type']
+                photo_dict['url'] = item['sizes'][-1]['url']
+                print(photo_dict['url'])
 
-                    photo_lst.append(photo_dict)
+                # выбираем тип фото z
+                # for i in item['sizes']:
+                #     if i['type'] == 'z':
+                #         # Формируем название файла фото по кол-ву лайков
+                #         photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
+                #         photo_dict['size'] = i['type']
+                #         #  Показывать пользователю в консоли для лога
+                #         photo_dict['file_name_real_name'] = os.path.basename(urlparse(i['url']).path)
+                #         photo_dict['url'] = i['url']
+                #         print(
+                #             f'{count}, photo {photo_dict["file_name_real_name"]}, from {photo_dict["url"]}, | {i["type"]}')
+                #         count += 1
+                #     else:
+                #         photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
+                #         photo_dict['size'] = item['sizes'][-1]['type']
+                #         #  Показывать пользователю в консоли для лога
+                #         photo_dict['file_name_real_name'] = os.path.basename(urlparse(i['url']).path)
+                #         photo_dict['url'] = i['url']
+                #         print(
+                #             f'{count}, photo {photo_dict["file_name_real_name"]}, from {photo_dict["url"]}, | {i["type"]}')
+
+                count += 1
+
+                photo_lst.append(photo_dict)
+        # pprint(photo_lst)
         print(f'Downloaded from VK profile.\n'
               f'For more information see  "photos_log.json"')
         return photo_lst
@@ -185,8 +193,9 @@ if __name__ == '__main__':
     print('input data and press enter'.upper())
     TOKEN_Y = 'AgAAAAAAS0ctAADLW5s95K1kRERdr_-hgG5KTnI'  # input(f"Input token from Yandex.Disk Polygon: ")
 
+    vk_id = 33636542  # int(input("Input vk user id: "))
     # vk_id = 552934290  # int(input("Input vk user id: "))
-    vk_id = 2419874 #552934290 #int(input("Input vk user id: "))
+    # vk_id = 2419874  # 552934290 #int(input("Input vk user id: "))
     vk_token = '230860474a5a4588be7af906b5fc4d3b038401bbeb578b20603e956ab02b971c41fb78c9f1f8b02b887f4'  # str(input(f"Input token VK: "))
     print('--------------------------------------------')
     vk_v = 5.89
