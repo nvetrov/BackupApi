@@ -100,7 +100,7 @@ class VK:
         self.count = count  # количество фоток по умолчанию 5
 
     #     Получить фотографии с профиля vk.
-    def get_photos_vk(self):
+    def connect_vk(self):
         link_vk = 'https://api.vk.com/method/photos.get'
         params = {'owner_id': self.vk,
                   'access_token': self.token,
@@ -145,10 +145,15 @@ class VK:
 
         return urls_dict
 
-    def logging_vk(self, answer):
-        count = 0
+    def parse_vk_profile(self, answer):
+        count = 1
         # Обработка ответа от VK
         ll = answer['response']['items']
+
+        if len(ll) > 0:
+            print(f'Photo not found in profile id{self.vk})')
+            exit()
+
         photo_lst = []
         print("Download from VK. Please wait...")
         for item in ll:
@@ -157,7 +162,9 @@ class VK:
                 photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
                 photo_dict['size'] = item['sizes'][-1]['type']
                 photo_dict['url'] = item['sizes'][-1]['url']
-                pprint(photo_dict)
+
+
+                # print(count, photo_dict)
 
                 # выбираем тип фото z
                 # for i in item['sizes']:
@@ -183,7 +190,7 @@ class VK:
                 count += 1
 
                 photo_lst.append(photo_dict)
-        # pprint(photo_lst)
+        pprint(photo_lst)
         print(f'Downloaded from VK profile.\n'
               f'For more information see  "photos_log.json"')
         return photo_lst
@@ -206,10 +213,10 @@ if __name__ == '__main__':
     v_obj = VK(_vk_id=vk_id, token=vk_token, version=vk_v, count=count_photos)
 
     # Получили данные из профиля VK пользователя
-    data = v_obj.get_photos_vk()
+    r = v_obj.connect_vk()
 
     # Логирование + обработка
-    full_logs = v_obj.logging_vk(data)
+    full_logs = v_obj.parse_vk_profile(r)
 
     # Сохранить фото на ПК оффлайн.
     photo_links_vk = v_obj.clear_data_and_save_json(self=v_obj, dict_data=full_logs)
