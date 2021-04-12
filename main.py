@@ -45,9 +45,6 @@
 import copy
 import json
 import os
-from pprint import pprint
-from urllib.parse import urlparse
-# from pprint import pprint
 import requests
 
 
@@ -89,6 +86,14 @@ class YaUploader:
         if response.status_code == 202:
             print(f'File uploaded to Yandex Disk')
 
+    def get_url_y(self, photo_lists):
+        for link in photo_lists:
+            if 'url' in link and 'file_name' in link:
+                uploader.upload_file_y(ya_folder + '/' + link['file_name'], link['url'])
+        return True
+
+
+
 
 #  класс VK по работе с api
 class VK:
@@ -117,8 +122,7 @@ class VK:
         else:
             return photos_vk.json()
 
-    @staticmethod
-    def clear_data_and_save_json(self, dict_data):
+    def save_json_log_vk(self, dict_data):
         #  Создаем папку с названием альбома
         # os.rmdir('saved')
         if not os.path.exists('saved'):
@@ -145,12 +149,12 @@ class VK:
 
         return urls_dict
 
-    def parse_vk_profile(self, answer):
+    def parse_profile_vk(self, answer):
         count = 1
         # Обработка ответа от VK
         ll = answer['response']['items']
 
-        if len(ll) > 0:
+        if len(ll) == 0:
             print(f'Photo not found in profile id{self.vk})')
             exit()
 
@@ -162,7 +166,6 @@ class VK:
                 photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
                 photo_dict['size'] = item['sizes'][-1]['type']
                 photo_dict['url'] = item['sizes'][-1]['url']
-
 
                 # print(count, photo_dict)
 
@@ -190,7 +193,8 @@ class VK:
                 count += 1
 
                 photo_lst.append(photo_dict)
-        pprint(photo_lst)
+
+        # pprint(photo_lst)
         print(f'Downloaded from VK profile.\n'
               f'For more information see  "photos_log.json"')
         return photo_lst
@@ -216,28 +220,25 @@ if __name__ == '__main__':
     r = v_obj.connect_vk()
 
     # Логирование + обработка
-    full_logs = v_obj.parse_vk_profile(r)
+    full_logs = v_obj.parse_profile_vk(r)
 
-    # Сохранить фото на ПК оффлайн.
-    photo_links_vk = v_obj.clear_data_and_save_json(self=v_obj, dict_data=full_logs)
-    for p in photo_links_vk:
-        if 'url' in p:
-            rr = requests.get(p['url'])
-            with open(p['file_name'], 'wb') as f:
-                f.write(rr.content)
-        else:
-            continue
-        # Сохранить фото на ПК офлайн.
+    ##  Не нужно на компьютер сохранять фотографии. Достаточно файл с логом.
+    ##Сохранить фото на ПК оффлайн.
+    # photo_links_vk = v_obj.save_json_log_vk(dict_data=full_logs)
+    # for p in photo_links_vk:
+    #     if 'url' in p:
+    #         rr = requests.get(p['url'])
+    #         with open(p['file_name'], 'wb') as f:
+    #             f.write(rr.content)
+    #     else:
+    #         continue
+    ## Сохранить фото на ПК офлайн.
+
+    photo_links_vk = v_obj.save_json_log_vk(dict_data=full_logs)
     print('')
     # Сохраняем фото на yandex disk в папку по названию альбому
     ya_folder = photo_links_vk[::-1][0]['path_local'].split('/')[1]
-
     uploader = YaUploader(token=TOKEN_Y, ya_folder=ya_folder)
-
     print(f"Total files: {len(photo_links_vk) - 1}.  ")
-    for link in photo_links_vk:
-        if 'url' in link and 'file_name' in link:
-            # print(link['url'])
-            uploader.upload_file_y(ya_folder + '/' + link['file_name'], link['url'])
-
+    uploader.get_url_y(photo_lists=photo_links_vk)
     print(f'Upload completed successfully to directory "{ya_folder}".')
