@@ -1,6 +1,8 @@
 import copy
 import json
 import os
+from pprint import pprint
+
 import requests
 
 
@@ -40,7 +42,8 @@ class YaUploader:
         response = requests.post(up_url, headers=headers, params=params)
         response.raise_for_status()
         if response.status_code == 202:
-            print(f'File uploaded to Yandex Disk')
+            print(f'File uploaded to Yandex Disk\n'
+                  f"({params['url']}, {params['path']}\n")
 
     def get_url_y(self, photo_lists):
         for link in photo_lists:
@@ -69,7 +72,6 @@ class VK:
                   'feed_type': "likes",
                   'v': self.v,
                   }
-        print(f'self.count: {self.count}')
         photos_vk = requests.get(link_vk, params=params)
         if photos_vk.status_code != 200:
             print('No != 200')
@@ -79,7 +81,6 @@ class VK:
     # Сохранить лог
     def save_json_log_vk(self, dict_data):
         #  Создаем папку с названием альбома
-        # os.rmdir('saved')
         if not os.path.exists('saved'):
             os.mkdir('saved')
         photo_folder = 'saved/album{0}'.format(self.vk)
@@ -104,14 +105,14 @@ class VK:
 
         return urls_dict
 
+    # Собераем ссылки для скачивания фотографий из VK.
     def parse_profile_vk(self, answer):
-        count = 0
+        count = -1
         # Обработка ответа от VK
         ll = answer['response']['items']
         if len(ll) == 0:
             print(f'Photo not found in profile id{self.vk})')
             exit()
-        print(ll)
         photo_lst = []
         for item in ll:
             if count < self.count:
@@ -119,8 +120,7 @@ class VK:
                 photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
                 photo_dict['size'] = item['sizes'][-1]['type']
                 photo_dict['url'] = item['sizes'][-1]['url']
-                print('Загрузка:', item['sizes'][-1]['url'])
-                # print(photo_dict['file_name'], photo_dict['size'], photo_dict['url'])
+                print(photo_dict['file_name'], photo_dict['size'], photo_dict['url'])
                 photo_lst.append(photo_dict)
                 count += 1
         return photo_lst
@@ -130,12 +130,12 @@ if __name__ == '__main__':
     print('input data and press enter'.upper())
     TOKEN_Y = 'AgAAAAAAS0ctAADLW5s95K1kRERdr_-hgG5KTnI'  # input(f"Input token(Yandex.Disk Polygon): ")
 
-    vk_id = 552934290 # int(input("Input vk user id: "))
-    vk_token = "230860474a5a4588be7af906b5fc4d3b038401bbeb578b20603e956ab02b971c41fb78c9f1f8b02b887f4" #str(input(f"Input token VK: "))
+    vk_id = int(input("Input vk user id: "))
+    vk_token = str(input(f"Input token VK: "))
     print('--------------------------------------------')
     vk_v = 5.89
     # vk_v = 5.130   #  Current version
-    count_photos = 10 # Количество скаченных фото по умолчанию
+    count_photos = 10  # Количество скаченных фото по умолчанию
 
     # Инициализация класс VK -> v_obj
     v_obj = VK(_vk_id=vk_id, token=vk_token, version=vk_v, count=count_photos)
@@ -146,6 +146,7 @@ if __name__ == '__main__':
     # Логирование
     full_logs = v_obj.parse_profile_vk(r)
     photo_links_vk = v_obj.save_json_log_vk(dict_data=full_logs)
+    # pprint(photo_links_vk)
 
     # Название альбома на ЯДиске
     ya_folder = photo_links_vk[::-1][0]['path_local'].split('/')[1]
