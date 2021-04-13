@@ -2,7 +2,6 @@ import copy
 import json
 import os
 
-
 import requests
 
 
@@ -47,7 +46,8 @@ class YaUploader:
 
     def get_url_y(self, photo_lists):
         for link in photo_lists:
-            if 'url' in link and 'file_name' in link:
+            # if 'url' in link and 'file_name' in link:
+            if 'path_local' not in link:
                 uploader.upload_file_y(ya_folder + '/' + link['file_name'], link['url'])
         return len(photo_lists)
 
@@ -94,11 +94,11 @@ class VK:
         # Копируем данные для передачи url, path_local
         urls_dict = copy.deepcopy(dict_data)
         # Убираем url, path_local из выходных данных .json:
-        for i in dict_data:
-            if 'url' in i:
-                del i['url']
-            elif 'path_local' in i:
-                del i["path_local"]
+        # for i in dict_data:
+        #     if 'url' in i:
+        #         del i['url']
+        #     elif 'path_local' in i:
+        #         del i["path_local"]
         # Сохраняем в лог файл на диск
         with open(f'{self.vk}.json', 'w') as file:
             json.dump(dict_data, file, indent=2, ensure_ascii=False)
@@ -107,7 +107,7 @@ class VK:
 
     # Собераем ссылки для скачивания фотографий из VK.
     def parse_profile_vk(self, answer):
-        count = -1
+        count = 0
         # Обработка ответа от VK
         ll = answer['response']['items']
         if len(ll) == 0:
@@ -128,14 +128,14 @@ class VK:
 
 if __name__ == '__main__':
     print('input data and press enter'.upper())
-    TOKEN_Y = 'AgAAAAAAS0ctAADLW5s95K1kRERdr_-hgG5KTnI'  # input(f"Input token(Yandex.Disk Polygon): ")
+    TOKEN_Y = input(f"Input token(Yandex.Disk Polygon): ")
 
     vk_id = int(input("Input vk user id: "))
     vk_token = str(input(f"Input token VK: "))
     print('--------------------------------------------')
     vk_v = 5.89
     # vk_v = 5.130   #  Current version
-    count_photos = 10  # Количество скаченных фото по умолчанию
+    count_photos = 6  # Количество скаченных фото по умолчанию
 
     # Инициализация класс VK -> v_obj
     v_obj = VK(_vk_id=vk_id, token=vk_token, version=vk_v, count=count_photos)
