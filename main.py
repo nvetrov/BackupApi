@@ -137,10 +137,10 @@ class VK:
 
 if __name__ == '__main__':
     print('input data and press enter'.upper())
-    # TOKEN_Y = input(f"Input token(Yandex.Disk Polygon): ")
-    #
-    # vk_id = int(input("Input vk user id: "))
-    # vk_token = str(input(f"Input token VK: "))
+    TOKEN_Y = input(f"Input token(Yandex.Disk Polygon): ")
+
+    vk_id = int(input("Input vk user id: "))
+    vk_token = str(input(f"Input token VK: "))
     print('--------------------------------------------')
     vk_v = 5.89
     # vk_v = 5.130   #  Current version
