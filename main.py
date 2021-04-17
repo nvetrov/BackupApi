@@ -1,15 +1,16 @@
-import copy
 import json
 import os
+from urllib.parse import urlparse
 
 import requests
 
 
+# TODO: Проверить имя
 #  класс yandex по работе с api
 class YaUploader:
-    def __init__(self, token: str, ya_folder: str):
+    def __init__(self, token: str, ya_f: str):
         self.token = token
-        self.y_directory = ya_folder
+        self.y_directory = ya_f
         self.create_dir_y()
 
     def get_headers(self):
@@ -78,7 +79,7 @@ class VK:
         else:
             return photos_vk.json()
 
-    # Сохранить лог
+    # Сохранить лог -> json
     def save_json_log_vk(self, dict_data):
         #  Создаем папку с названием альбома
         if not os.path.exists('saved'):
@@ -91,19 +92,26 @@ class VK:
         # Добавляю путь к локальный файлам.
         prep_dict = {'path_local': photo_folder}
         dict_data.append(prep_dict)
-        # Копируем данные для передачи url, path_local
-        urls_dict = copy.deepcopy(dict_data)
-        # Убираем url, path_local из выходных данных .json:
-        # for i in dict_data:
-        #     if 'url' in i:
-        #         del i['url']
-        #     elif 'path_local' in i:
-        #         del i["path_local"]
+
+        # Удаляем дубликаты имена файлов
+        names = []
+        for dct in dict_data:
+            count = 1
+            if "file_name" in dct:
+                if dct['file_name'] in names:
+                    dct['file_name'] = dct['file_name'][:-4] + '_' + str(count) + dct['file_name'][-4:]
+                    names.append(dct['file_name'])
+                    count += 1
+                else:
+                    names.append(dct['file_name'])
+            else:
+                continue
+
         # Сохраняем в лог файл на диск
         with open(f'{self.vk}.json', 'w') as file:
             json.dump(dict_data, file, indent=2, ensure_ascii=False)
 
-        return urls_dict
+        return dict_data
 
     # Собераем ссылки для скачивания фотографий из VK.
     def parse_profile_vk(self, answer):
@@ -116,11 +124,12 @@ class VK:
         photo_lst = []
         for item in ll:
             if count < self.count:
+
                 photo_dict = dict()
-                photo_dict['file_name'] = str(item['likes']['count']) + '.jpg'
+                photo_dict['file_name'] = str(item['likes']['count']) + '_' + \
+                                          str(os.path.basename(urlparse(item['sizes'][-1]['url']).path))
                 photo_dict['size'] = item['sizes'][-1]['type']
                 photo_dict['url'] = item['sizes'][-1]['url']
-                print(photo_dict['file_name'], photo_dict['size'], photo_dict['url'])
                 photo_lst.append(photo_dict)
                 count += 1
         return photo_lst
@@ -128,14 +137,14 @@ class VK:
 
 if __name__ == '__main__':
     print('input data and press enter'.upper())
-    TOKEN_Y = input(f"Input token(Yandex.Disk Polygon): ")
-
-    vk_id = int(input("Input vk user id: "))
-    vk_token = str(input(f"Input token VK: "))
+    # TOKEN_Y = input(f"Input token(Yandex.Disk Polygon): ")
+    #
+    # vk_id = int(input("Input vk user id: "))
+    # vk_token = str(input(f"Input token VK: "))
     print('--------------------------------------------')
     vk_v = 5.89
     # vk_v = 5.130   #  Current version
-    count_photos = 6  # Количество скаченных фото по умолчанию
+    count_photos = 10  # Количество скаченных фото по умолчанию
 
     # Инициализация класс VK -> v_obj
     v_obj = VK(_vk_id=vk_id, token=vk_token, version=vk_v, count=count_photos)
@@ -146,12 +155,12 @@ if __name__ == '__main__':
     # Логирование
     full_logs = v_obj.parse_profile_vk(r)
     photo_links_vk = v_obj.save_json_log_vk(dict_data=full_logs)
-    # pprint(photo_links_vk)
+
 
     # Название альбома на ЯДиске
     ya_folder = photo_links_vk[::-1][0]['path_local'].split('/')[1]
 
-    uploader = YaUploader(token=TOKEN_Y, ya_folder=ya_folder)
+    uploader = YaUploader(token=TOKEN_Y, ya_f=ya_folder)
 
     # Сохранение фото на Y.Диск
     c = uploader.get_url_y(photo_lists=photo_links_vk)
